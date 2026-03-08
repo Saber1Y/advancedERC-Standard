@@ -7,6 +7,7 @@ import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
 error NotMinter();
+error NotPauser();
 
 contract AdvancedERCToken is ERC20, AccessControl, Pausable, ERC20Permit {
 
@@ -32,8 +33,21 @@ contract AdvancedERCToken is ERC20, AccessControl, Pausable, ERC20Permit {
         if (!hasRole(MINTER_ROLE, msg.sender)) {
             revert NotMinter();
         }
-        
+
         _burn(msg.sender, amount);
+    }
+
+    function pause() public  onlyRole(PAUSER_ROLE) {
+        if (!hasRole(PAUSER_ROLE, msg.sender)) {
+            revert NotPauser();
+        }
+        _pause();
+    }
+    function unpause() public  onlyRole(PAUSER_ROLE) {
+        if (!hasRole(PAUSER_ROLE, msg.sender)) {
+            revert NotPauser();
+        }
+        _unpause();
     }
 
 }
